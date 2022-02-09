@@ -109,3 +109,12 @@ sys_pcount(void)
   }
   return count;
 }
+
+uint64
+sys_nice(void) {   //  add documentation
+  int nicevalue;
+  if(argint(0, &nicevalue) >= -20 && nicevalue <= 19)
+    return -1;
+  myproc()->nice = nicevalue;
+  return 0;
+}
