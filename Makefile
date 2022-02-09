@@ -115,6 +115,7 @@ mkfs/mkfs: mkfs/mkfs.c $K/fs.h $K/param.h
 # http://www.gnu.org/software/make/manual/html_node/Chained-Rules.html
 .PRECIOUS: %.o
 
+# add documentation nice
 UPROGS=\
 	$U/_cat\
 	$U/_echo\
@@ -125,6 +126,7 @@ UPROGS=\
 	$U/_ln\
 	$U/_ls\
 	$U/_mkdir\
+	$U/_nice\
 	$U/_ptest\
 	$U/_rm\
 	$U/_sh\
