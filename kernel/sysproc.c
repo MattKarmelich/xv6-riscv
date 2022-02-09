@@ -95,3 +95,17 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+uint64
+sys_pcount(void)
+{
+  uint count = 0;
+
+  int procSize = sizeof(proc)/sizeof(proc[0]);
+  for (int i = 0; i < procSize; i++) {
+    if(proc[i].state != UNUSED) {
+      count++;
+    }
+  }
+  return count;
+}

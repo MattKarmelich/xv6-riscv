@@ -13,6 +13,7 @@ int kill(int);
 int exec(char*, char**);
 int open(const char*, int);
 int mknod(const char*, short, short);
+int pcount(void);
 int unlink(const char*);
 int fstat(int fd, struct stat*);
 int link(const char*, const char*);

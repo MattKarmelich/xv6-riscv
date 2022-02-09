@@ -14,7 +14,7 @@ main()
     consoleinit();
     printfinit();
     printf("\n");
-    printf("xv6 kernel is booting\n");
+    printf("You best believe that Matt Karmelich's xv6 kernel is booting\n");
     printf("\n");
     kinit();         // physical page allocator
     kvminit();       // create kernel page table
