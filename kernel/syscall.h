@@ -22,3 +22,4 @@
 #define SYS_close  21
 #define SYS_pcount 22
 #define SYS_nice   23   //  gives nice index 23 in syscall
+#define SYS_getpstat 24   //  gives getpstats index 24 in syscall

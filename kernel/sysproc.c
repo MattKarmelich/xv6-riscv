@@ -6,6 +6,7 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "pstat.h"
 
 uint64
 sys_exit(void)
@@ -118,3 +119,31 @@ sys_nice(void) {   //  add documentation
   myproc()->nice = nicevalue;
   return 0;
 }
+
+uint64
+sys_getpstat(void) { 
+  uint64 result = 0; 
+  struct proc *p = myproc(); 
+  uint64 upstat; // the virtual (user) address of the passed argument struct pstat 
+  struct pstat kpstat; // a struct pstat in kernel memory 
+ 
+  // get the system call argument passed by the user program 
+  if (argaddr(0, &upstat) < 0) 
+    return -1; 
+ 
+  int procSize = sizeof(proc)/sizeof(proc[0]); //gets processes running
+  // add documentation
+  for (int i = 0; i < procSize; i++) {
+    kpstat.inuse[i] = proc[i].state == USED;
+    kpstat.pid[i] = proc[i].pid;
+    kpstat.nice[i] = proc[i].nice;
+  }
+  // TODO: fill the arrays in kpstat (see the definition of struct pstat above). 
+  // The data to fill in the arrays comes from the process table array proc[]. 
+ 
+  // copy pstat from kernel memory to user memory 
+  if (copyout(p->pagetable, upstat, (char *)&kpstat, sizeof(kpstat)) < 0) 
+    return -1; 
+ 
+  return result; 
+} 
