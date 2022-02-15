@@ -114,7 +114,7 @@ sys_pcount(void)
 uint64
 sys_nice(void) {   //  add documentation
   int nicevalue;
-  if(argint(0, &nicevalue) >= -20 && nicevalue <= 19)
+  if(!(argint(0, &nicevalue) >= -20 && nicevalue <= 19))
     return -1;
   myproc()->nice = nicevalue;
   return 0;
@@ -131,9 +131,8 @@ sys_getpstat(void) {
   if (argaddr(0, &upstat) < 0) 
     return -1; 
  
-  int procSize = sizeof(proc)/sizeof(proc[0]); //gets processes running
   // add documentation
-  for (int i = 0; i < procSize; i++) {
+  for (int i = 0; i < NPROC; i++) {
     kpstat.inuse[i] = proc[i].state == USED;
     kpstat.pid[i] = proc[i].pid;
     kpstat.nice[i] = proc[i].nice;
