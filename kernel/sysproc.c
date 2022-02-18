@@ -102,8 +102,8 @@ sys_pcount(void)
 {
   uint count = 0;
 
-  int procSize = sizeof(proc)/sizeof(proc[0]);
-  for (int i = 0; i < procSize; i++) {
+ //  Size of array is NPROC. Changed for loop termination to NPROC. Deleted sizeof() function call.
+  for (int i = 0; i < NPROC; i++) {
     if(proc[i].state != UNUSED) {
       count++;
     }
