@@ -115,9 +115,9 @@ uint64
 sys_nice(void) {   // defition of nice value function
   int nicevalue; // nice value variable declared
   if(!(argint(0, &nicevalue) >= -20 && nicevalue <= 19)) // nice value has an integer range of -20 to 19. If not in that value function returns -1.
-    return -1;
+    return -1; // return -1 for invalid nicevalue
   myproc()->nice = nicevalue;  //  Nice value is assigned to the process calling nice function as it's between -19 and 20.
-  return 0;
+  return 0; // return 0 on success
 }
 
 uint64
@@ -134,7 +134,7 @@ sys_getpstat(void) {
   for (int i = 0; i < NPROC; i++) { // iterate through each process in kpstat
     kpstat.inuse[i] = proc[i].state != UNUSED; // set 1 if process is used, 0 if unused
     kpstat.pid[i] = proc[i].pid; // place pid into pstat struct
-    kpstat.nice[i] = proc[i].nice; // pl
+    kpstat.nice[i] = proc[i].nice; // place nice value into pstat struct
   }
   // TODO: fill the arrays in kpstat (see the definition of struct pstat above). 
   // The data to fill in the arrays comes from the process table array proc[]. 

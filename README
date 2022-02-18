@@ -1,3 +1,19 @@
+Names: 
+Matt Karmelich
+Eranda Sooriyarachchi
+
+Description:  
+implemented nice sys call, which updates a nice value of process
+implimented nice user call that sets nice valuse of process
+implemented getpstat syscall, which stores information on processes
+implementeed getinusepstat user call, that prints the pstat info on in use procs
+Changed files
+
+New files:
+kernel/pstat.h
+user/nice.c
+user/getinusepstat.c
+
 xv6 is a re-implementation of Dennis Ritchie's and Ken Thompson's Unix
 Version 6 (v6).  xv6 loosely follows the structure and style of v6,
 but is implemented for a modern RISC-V multiprocessor using ANSI C.
