@@ -112,11 +112,11 @@ sys_pcount(void)
 }
 
 uint64
-sys_nice(void) {   //  add documentation
-  int nicevalue;
-  if(!(argint(0, &nicevalue) >= -20 && nicevalue <= 19))
+sys_nice(void) {   // defition of nice value function
+  int nicevalue; // nice value variable declared
+  if(!(argint(0, &nicevalue) >= -19 && nicevalue <= 20)) // nice value has an integer range of -19 to 20. If not in that value function returns -1.
     return -1;
-  myproc()->nice = nicevalue;
+  myproc()->nice = nicevalue;  //  Nice value is assigned to the process calling nice function as it's between -19 and 20.
   return 0;
 }
 
