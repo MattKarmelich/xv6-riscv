@@ -131,11 +131,10 @@ sys_getpstat(void) {
   if (argaddr(0, &upstat) < 0) 
     return -1; 
  
-  // add documentation
-  for (int i = 0; i < NPROC; i++) {
-    kpstat.inuse[i] = proc[i].state == USED;
-    kpstat.pid[i] = proc[i].pid;
-    kpstat.nice[i] = proc[i].nice;
+  for (int i = 0; i < NPROC; i++) { // iterate through each process in kpstat
+    kpstat.inuse[i] = proc[i].state != UNUSED; // set 1 if process is used, 0 if unused
+    kpstat.pid[i] = proc[i].pid; // place pid into pstat struct
+    kpstat.nice[i] = proc[i].nice; // pl
   }
   // TODO: fill the arrays in kpstat (see the definition of struct pstat above). 
   // The data to fill in the arrays comes from the process table array proc[]. 

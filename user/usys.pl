@@ -37,4 +37,5 @@ entry("sbrk");
 entry("sleep");
 entry("uptime");
 entry("pcount");
-entry("nice"); # add documentation
+entry("nice"); # pearl nice entry
+entry("getpstat"); # pearl getpstat entry

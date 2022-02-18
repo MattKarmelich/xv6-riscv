@@ -115,11 +115,12 @@ mkfs/mkfs: mkfs/mkfs.c $K/fs.h $K/param.h
 # http://www.gnu.org/software/make/manual/html_node/Chained-Rules.html
 .PRECIOUS: %.o
 
-# add documentation nice
+# added calls nice and getinusepstat
 UPROGS=\
 	$U/_cat\
 	$U/_echo\
 	$U/_forktest\
+	$U/_getinusepstat\
 	$U/_grep\
 	$U/_init\
 	$U/_kill\

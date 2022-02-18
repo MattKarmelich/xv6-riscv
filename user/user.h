@@ -1,4 +1,5 @@
 struct stat;
+struct pstat;
 struct rtcdate;
 
 // system calls
@@ -24,7 +25,8 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
-int nice(int); // add documentation
+int nice(int);  //  adds nice systemcall
+int getpstat(struct pstat*);  // adds pstat systemcall
 
 // ulib.c
 int stat(const char*, struct stat*);

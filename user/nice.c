@@ -7,7 +7,7 @@ main(int argc, char *argv[])
 {
   // if the argument count is less than defined value, exit program
   if(argc < 3){
-    printf("Too few arguments\n")
+    printf("Too few arguments\n");
     exit(1);
   }
 
