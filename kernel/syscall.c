@@ -105,8 +105,8 @@ extern uint64 sys_wait(void);
 extern uint64 sys_write(void);
 extern uint64 sys_uptime(void);
 extern uint64 sys_pcount(void);
-extern uint64 sys_nice(void);  //  add documentation
-extern uint64 sys_getpstat(void);  //  add documentation
+extern uint64 sys_nice(void);  //  Declaration of kernal side function of Nice system call
+extern uint64 sys_getpstat(void);  //  Declaration of kernal side function of getpstat system call
 
 static uint64 (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -131,8 +131,8 @@ static uint64 (*syscalls[])(void) = {
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
 [SYS_pcount]  sys_pcount,
-[SYS_nice]    sys_nice,   //  add documentation
-[SYS_getpstat]sys_getpstat,  //  add documentation
+[SYS_nice]    sys_nice,   //  Addition of Nice function pointer to the syscalls array of function pointers, so syscall can call the function when usertrap() function calls syscall.
+[SYS_getpstat]sys_getpstat,  //  Addition of getpstat fuction pointer to syscalls array 
 };
 
 void
