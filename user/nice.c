@@ -1,16 +1,16 @@
 #include "kernel/types.h"
 #include "kernel/stat.h"
 #include "user/user.h"
-// add documentation
+// Running nice on the user side. Giving command line arguments and get return value.
 int
 main(int argc, char *argv[])
 {
-  
+  // if the argument count is less than defined value, exit program
   if(argc <= 2){
     exit(0);
   }
 
-  nice(atoi(argv[1]));
+  nice(atoi(argv[1])); // converts argument at index 1 of argv array to an integer so it could be used as the nice value.
 
   int progargc = argc - 1;
   char *progargv[progargc];
