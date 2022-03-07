@@ -6,9 +6,22 @@
 #include "proc.h"
 #include "defs.h"
 
+#define MAX_UINT64 (-1)
+#define EMPTY MAX_UINT64
+#define queuehead(qid) (qid)
+#define queuetail(qid) ((qid) + 1)
+#define firstid(qid) (qtable[queuehead(qid)].next)
+#define lastid(qid) (qtable[queuetail(qid)].prev)
+#define isempty(qid) (firstid(qid) >= NPROC)
+#define nonempty(qid) (firstid(qid) < NPROC)
+#define firstkey(qid) (qtable[firstid(qid)].key)
+#define lastkey(qid) (qtable[ lastid(qid)].key)
+
 struct cpu cpus[NCPU];
 
 struct proc proc[NPROC];
+
+struct qentry qtable[NPROC+2];
 
 struct proc *initproc;
 
@@ -120,6 +133,7 @@ found:
   p->pid = allocpid();
   p->state = USED;
   p->nice = 10; // sets nice value default to 10
+  p->runtime = 0;  // sets runtime default to 0
 
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
@@ -465,6 +479,94 @@ scheduler(void)
   }
 }
 
+int
+getitem(int pid) {
+  int next = qtable[pid].next;
+  int prev = qtable[pid].prev;
+
+  qtable[next].next = next;
+  qtable[prev].prev = prev;
+
+  return pid;
+}
+
+int
+getfirst(int qid) {
+  if (isempty(qid)) {
+    return EMPTY;
+  }
+
+  int head = queuehead(qid);
+  return getitem(qtable[head].next);
+}
+
+int
+getlast(int qid) {
+  if (isempty(qid)) {
+    return EMPTY;
+  }
+
+  int tail = queuetail(qid);
+  return getitem(qtable[tail].next);
+}
+
+int
+enqueue(int pid, int qid) {
+  // TODO: errror handling
+
+  int tail = queuetail(qid);
+  int prev = qtable[tail].prev;
+
+  qtable[pid].next = tail; /* insert just before tail node */
+  qtable[pid].prev = prev;
+  qtable[prev].next = pid;
+  qtable[tail].prev = pid;
+
+  return pid;
+}
+
+int
+dequeue(int qid) {
+  // TODO: error handling
+
+  int pid = getfirst(qid);
+
+  qtable[pid].prev = EMPTY;
+  qtable[pid].next = EMPTY;
+
+  return pid;
+}
+
+void
+scheduler_rr(void)
+{
+  struct proc *p;
+  struct cpu *c = mycpu();
+  
+  c->proc = 0;
+  for(;;){
+    // Avoid deadlock by ensuring that devices can interrupt.
+    intr_on();
+
+    for(p = proc; p < &proc[NPROC]; p++) {
+      acquire(&p->lock);
+      if(p->state == RUNNABLE) {
+        // Switch to chosen process.  It is the process's job
+        // to release its lock and then reacquire it
+        // before jumping back to us.
+        p->state = RUNNING;
+        c->proc = p;
+        swtch(&c->context, &p->context);
+
+        // Process is done running for now.
+        // It should have changed its p->state before coming back.
+        c->proc = 0;
+      }
+      release(&p->lock);
+    }
+  }
+}
+
 // Switch to scheduler.  Must hold only p->lock
 // and have changed proc->state. Saves and restores
 // intena because intena is a property of this
@@ -499,6 +601,7 @@ yield(void)
   struct proc *p = myproc();
   acquire(&p->lock);
   p->state = RUNNABLE;
+  p->runtime++;
   sched();
   release(&p->lock);
 }

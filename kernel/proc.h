@@ -93,6 +93,7 @@ struct proc {
   int xstate;                  // Exit status to be returned to parent's wait
   int pid;                     // Process ID
   int nice;                    // Store nice value on this array. Process control block of nice value.
+  int runtime;                 // Store the runtime
 
   // wait_lock must be held when using this:
   struct proc *parent;         // Parent process
@@ -109,3 +110,13 @@ struct proc {
 };
 
 extern struct proc proc[NPROC];
+
+// a node of the linked list 
+struct qentry { 
+    uint64 pass; // used by the stride scheduler to keep the list sorted 
+    uint64 prev; // index of previous qentry in list 
+    uint64 next; // index of next qentry in list 
+};
+ 
+// a fixed size table where the index of a process in proc[] is the same in qtable[] 
+extern struct qentry qtable[NPROC+2]; 
