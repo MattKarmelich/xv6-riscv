@@ -601,9 +601,11 @@ yield(void)
   struct proc *p = myproc();
   acquire(&p->lock);
   p->state = RUNNABLE;
-  p->runtime++;
   sched();
+  p->runtime++; //increment runtime by 1 everytime a process is interrupted by timer.
   release(&p->lock);
+  
+
 }
 
 // A fork child's very first scheduling by scheduler()
