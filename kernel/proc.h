@@ -95,6 +95,7 @@ struct proc {
   int qid;                     // ID in queue for scheduler
   int nice;                    // Store nice value on this array. Process control block of nice value.
   int runtime;                 // Store the runtime
+  int stride;                  // store stride value
 
   // wait_lock must be held when using this:
   struct proc *parent;         // Parent process
@@ -109,7 +110,16 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
 };
-
+static const int nice_to_tickets[40] = {
+/* -20 */ 88761, 71755, 56483, 46273, 36291,
+/* -15 */ 29154, 23254, 18705, 14949, 11916,
+/* -10 */ 9548, 7620, 6100, 4904, 3906,
+/* -5 */ 3121, 2501, 1991, 1586, 1277,
+/* 0 */ 1024, 820, 655, 526, 423,
+/* 5 */ 335, 272, 215, 172, 137,
+/* 10 */ 110, 87, 70, 56, 45,
+/* 15 */ 36, 29, 23, 18, 15,
+};// Tickets according to nice value.
 extern struct proc proc[NPROC];
 
 // a node of the linked list 

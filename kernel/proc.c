@@ -262,6 +262,13 @@ userinit(void)
   release(&p->lock);
 }
 
+// function to calculate stride value.
+int
+stride(void) {
+  struct proc *p = myproc();
+  int tickets = nice_to_tickets[p->nice + 20];
+  p->stride = 1000000 / tickets;
+}
 // Grow or shrink user memory by n bytes.
 // Return 0 on success, -1 on failure.
 int
