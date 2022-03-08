@@ -13,7 +13,6 @@
 #define firstid(qid) (qtable[queuehead(qid)].next)
 #define lastid(qid) (qtable[queuetail(qid)].prev)
 #define isempty(qid) (firstid(qid) >= NPROC)
-#define nonempty(qid) (firstid(qid) < NPROC)
 #define firstkey(qid) (qtable[firstid(qid)].key)
 #define lastkey(qid) (qtable[ lastid(qid)].key)
 
@@ -134,6 +133,8 @@ found:
   p->state = USED;
   p->nice = 10; // sets nice value default to 10
   p->runtime = 0;  // sets runtime default to 0
+  p->qid = -1; // sets default qid as -1, as it is not in queue.
+  p->stride = 0;  // sets the stride default to 0
 
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
@@ -545,6 +546,7 @@ scheduler_rr(void)
     int procRunCount = 0;
     int headqid = EMPTY;
     for(p = proc; p < &proc[NPROC]; p++) {
+      acquire(&p->lock);
       if(p->state == RUNNABLE) {
         p->qid = p - proc;
         enqueue(p->qid);
@@ -553,9 +555,11 @@ scheduler_rr(void)
         }
         procRunCount++;
       }
+      release(&p->lock);
     }
     for(;procRunCount > 0; procRunCount--) {
       p = &proc[headqid];
+      acquire(&p->lock);
       headqid = getfirst(p->qid);   
       dequeue(p->qid);
       // Switch to chosen process.  It is the process's job
@@ -564,8 +568,8 @@ scheduler_rr(void)
       p->state = RUNNING;
       c->proc = p;
       swtch(&c->context, &p->context);
+      release(&p->lock);
     }
-    release(&p->lock);
   }
 }
 
