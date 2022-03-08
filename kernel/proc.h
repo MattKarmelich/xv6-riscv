@@ -92,6 +92,7 @@ struct proc {
   int killed;                  // If non-zero, have been killed
   int xstate;                  // Exit status to be returned to parent's wait
   int pid;                     // Process ID
+  int qid;                     // ID in queue for scheduler
   int nice;                    // Store nice value on this array. Process control block of nice value.
   int runtime;                 // Store the runtime
 

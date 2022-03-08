@@ -501,40 +501,28 @@ getfirst(int qid) {
 }
 
 int
-getlast(int qid) {
-  if (isempty(qid)) {
-    return EMPTY;
-  }
-
-  int tail = queuetail(qid);
-  return getitem(qtable[tail].next);
-}
-
-int
-enqueue(int pid, int qid) {
+enqueue(int qid) {
   // TODO: errror handling
 
   int tail = queuetail(qid);
   int prev = qtable[tail].prev;
 
-  qtable[pid].next = tail; /* insert just before tail node */
-  qtable[pid].prev = prev;
-  qtable[prev].next = pid;
-  qtable[tail].prev = pid;
+  qtable[qid].next = tail; /* insert just before tail node */
+  qtable[qid].prev = prev;
+  qtable[prev].next = qid;
+  qtable[tail].prev = qid;
 
-  return pid;
+  return qid;
 }
 
 int
 dequeue(int qid) {
   // TODO: error handling
 
-  int pid = getfirst(qid);
+  qtable[qid].prev = EMPTY;
+  qtable[qid].next = EMPTY;
 
-  qtable[pid].prev = EMPTY;
-  qtable[pid].next = EMPTY;
-
-  return pid;
+  return qid;
 }
 
 void
@@ -547,23 +535,30 @@ scheduler_rr(void)
   for(;;){
     // Avoid deadlock by ensuring that devices can interrupt.
     intr_on();
-
+    int procRunCount = 0;
+    int headqid = EMPTY;
     for(p = proc; p < &proc[NPROC]; p++) {
-      acquire(&p->lock);
       if(p->state == RUNNABLE) {
-        // Switch to chosen process.  It is the process's job
-        // to release its lock and then reacquire it
-        // before jumping back to us.
-        p->state = RUNNING;
-        c->proc = p;
-        swtch(&c->context, &p->context);
-
-        // Process is done running for now.
-        // It should have changed its p->state before coming back.
-        c->proc = 0;
+        p->qid = p - proc;
+        enqueue(p->qid);
+        if(!procRunCount) {
+          headqid = p->qid;
+        }
+        procRunCount++;
       }
-      release(&p->lock);
     }
+    for(;procRunCount > 0; procRunCount--) {
+      p = &proc[headqid];
+      headqid = getfirst(p->qid);   
+      dequeue(p->qid);
+      // Switch to chosen process.  It is the process's job
+      // to release its lock and then reacquire it
+      // before jumping back to us.
+      p->state = RUNNING;
+      c->proc = p;
+      swtch(&c->context, &p->context);
+    }
+    release(&p->lock);
   }
 }
 
