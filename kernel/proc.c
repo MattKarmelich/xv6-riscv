@@ -518,7 +518,11 @@ enqueue(int qid) {
 
   qtable[qid].next = tail; /* insert just before tail node */
   qtable[qid].prev = prev;
+<<<<<<< Updated upstream
   qtable[qid].pass = &proc[headqid].pass;
+=======
+  qtable[qid].pass = 0;
+>>>>>>> Stashed changes
   qtable[prev].next = qid;
   qtable[tail].prev = qid;
 
