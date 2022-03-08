@@ -40,6 +40,17 @@ main()
     trapinithart();   // install kernel trap vector
     plicinithart();   // ask PLIC for device interrupts
   }
-
-  scheduler();        
+  switch(SCHEDULER) {
+    case 1: 
+      scheduler();
+      break;
+    case 2:
+      scheduler_rr();
+      break;
+    case 3:
+    default:
+      printf("For the scheduler param, 1 - original, 2 - round-robin with queue, and 3 - stride\n");
+      break;
+  } 
+  // scheduler();        
 }
