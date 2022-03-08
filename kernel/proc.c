@@ -614,6 +614,28 @@ scheduler_stride(void)
     }
   }
 }
+
+int
+stridenqueue(int qid, int key) {
+  // TODO: errror handling
+
+  int tail = queuetail(qid);
+  int prev = qtable[tail].prev;
+
+ int curr = firstid(qid);
+ while (qtable[curr].qkey >= key)
+  {
+    curr = queuetab[curr].qnext;
+  }/* insert process between curr node and previous node */
+  prev = queuetab[curr].qprev; /* get index of previous node */
+  qtable[qid].qnext = curr;
+  qtable[qid].qprev = prev;
+  qtable[qid].qkey = key;
+  qtable[prev].qnext = qid;
+  qtable[curr].qprev = qid;
+ return OK;
+ 
+}
 // Switch to scheduler.  Must hold only p->lock
 // and have changed proc->state. Saves and restores
 // intena because intena is a property of this
