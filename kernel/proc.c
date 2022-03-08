@@ -269,6 +269,7 @@ stride(void) {
   struct proc *p = myproc();
   int tickets = nice_to_tickets[p->nice + 20];
   p->stride = 1000000 / tickets;
+  p->pass++; // increment pass value everytime process runs
 }
 // Grow or shrink user memory by n bytes.
 // Return 0 on success, -1 on failure.
@@ -517,6 +518,7 @@ enqueue(int qid) {
 
   qtable[qid].next = tail; /* insert just before tail node */
   qtable[qid].prev = prev;
+  qtable[qid].pass = &proc[headqid].pass;
   qtable[prev].next = qid;
   qtable[tail].prev = qid;
 
@@ -573,6 +575,45 @@ scheduler_rr(void)
   }
 }
 
+void
+scheduler_stride(void)
+{
+  struct proc *p;
+  struct cpu *c = mycpu();
+  
+  c->proc = 0;
+  for(;;){
+    // Avoid deadlock by ensuring that devices can interrupt.
+    intr_on();
+    int procRunCount = 0;
+    int headqid = EMPTY;
+    for(p = proc; p < &proc[NPROC]; p++) {
+      acquire(&p->lock);
+      if(p->state == RUNNABLE) {
+        p->qid = p - proc;
+        enqueue(p->qid);
+        if(!procRunCount) {
+          headqid = p->qid;
+        }
+        procRunCount++;
+      }
+      release(&p->lock);
+    }
+    for(;procRunCount > 0; procRunCount--) {
+      p = &proc[headqid];
+      acquire(&p->lock);
+      headqid = getfirst(p->qid);   
+      dequeue(p->qid);
+      // Switch to chosen process.  It is the process's job
+      // to release its lock and then reacquire it
+      // before jumping back to us.
+      p->state = RUNNING;
+      c->proc = p;
+      swtch(&c->context, &p->context);
+      release(&p->lock);
+    }
+  }
+}
 // Switch to scheduler.  Must hold only p->lock
 // and have changed proc->state. Saves and restores
 // intena because intena is a property of this

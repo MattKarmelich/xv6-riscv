@@ -48,6 +48,8 @@ main()
       scheduler_rr();
       break;
     case 3:
+      scheduler_stride();
+      break;
     default:
       printf("For the scheduler param, 1 - original, 2 - round-robin with queue, and 3 - stride\n");
       break;

@@ -96,6 +96,7 @@ struct proc {
   int nice;                    // Store nice value on this array. Process control block of nice value.
   int runtime;                 // Store the runtime
   int stride;                  // store stride value
+  int pass;                    // pass value 
 
   // wait_lock must be held when using this:
   struct proc *parent;         // Parent process
